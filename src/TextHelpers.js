@@ -2,7 +2,7 @@ import { convert as convertHtmlToText } from 'html-to-text'
 import { isURL } from 'validator'
 import { marked } from 'marked'
 import merge from 'lodash/fp/merge'
-import moment from 'moment-timezone'
+import { DateTime } from 'luxon'
 import prettyDate from 'pretty-date'
 import truncHTML from 'trunc-html'
 import truncText from 'trunc-text'
@@ -21,7 +21,7 @@ export function insaneOptions (providedInsaneOptions) {
       allowedAttributes: providedInsaneOptions?.allowedAttributes || {
         a: [
           'class', 'target', 'href',
-          'data-type', 'data-id','data-label',
+          'data-type', 'data-id', 'data-label',
           'data-user-id', 'data-entity-type', 'data-search'
         ],
         span: [
@@ -129,7 +129,7 @@ export function humanDate (date, short) {
   const isString = typeof date === 'string'
   const isValidDate = !isNaN(Number(date)) && Number(date) !== 0
   let ret = date && (isString || isValidDate)
-    ? prettyDate.format(isString ? new Date(date) : date)
+    ? prettyDate.toFormat(isString ? new Date(date) : date)
     : ''
 
   if (short) {
@@ -154,30 +154,30 @@ export function humanDate (date, short) {
 }
 
 export const formatDatePair = (startTime, endTime, returnAsObj) => {
-  const start = moment.tz(startTime, moment.tz.guess())
-  const end = moment.tz(endTime, moment.tz.guess())
+  const start = DateTime.fromISO(startTime).setZone(DateTime.local().zoneName)
+  const end = DateTime.fromISO(endTime).setZone(DateTime.local().zoneName)
 
-  const now = moment()
-  const isThisYear = start.year() === now.year() && end.year() === now.year()
+  const now = DateTime.now()
+  const isThisYear = start.year === now.year && end.year === now.year
 
   let to = ''
   let from = ''
 
   if (isThisYear) {
-    from = endTime ? start.format('ddd, MMM D [at] h:mmA') : start.format('ddd, MMM D [at] h:mmA z')
+    from = endTime ? start.toFormat("EEE, MMM d 'at' h:mma") : start.toFormat("EEE, MMM d 'at' h:mma ZZZZ")
   } else {
-    from = endTime ? start.format('ddd, MMM D, YYYY [at] h:mmA') : start.format('ddd, MMM D, YYYY [at] h:mmA z')
+    from = endTime ? start.toFormat("EEE, DD 'at' h:mma") : start.toFormat("EEE, DD 'at' h:mma ZZZZ")
   }
 
   if (endTime) {
-    if (end.year() !== start.year()) {
-      to = end.format('ddd, MMM D, YYYY [at] h:mmA z')
-    } else if (end.month() !== start.month() ||
-               end.day() !== start.day() ||
+    if (end.year !== start.year && !isThisYear) {
+      to = end.toFormat("EEE, DD 'at' h:mma ZZZZ")
+    } else if (end.month !== start.month ||
+               end.day !== start.day ||
                end <= now) {
-      to = end.format('ddd, MMM D [at] h:mmA z')
+      to = end.toFormat("EEE, MMM d 'at' h:mma ZZZZ")
     } else {
-      to = end.format('h:mmA z')
+      to = end.toFormat('h:mma ZZZZ')
     }
     to = returnAsObj ? to : ' - ' + to
   }
@@ -186,5 +186,5 @@ export const formatDatePair = (startTime, endTime, returnAsObj) => {
 }
 
 export function isDateInTheFuture (date) {
-  return moment(date).isAfter(moment())
+  return DateTime.fromMillis(date).isAfter(DateTime.now())
 }

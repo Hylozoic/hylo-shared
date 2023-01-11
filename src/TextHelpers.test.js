@@ -1,5 +1,5 @@
 import * as TextHelpers from '../src/TextHelpers'
-import moment from 'moment-timezone'
+import { DateTime } from 'luxon'
 
 describe('presentHTMLToText', () => {
   it("shouldn't include text of href on links", () => {
@@ -40,17 +40,22 @@ describe('markdown', () => {
 
 describe('formatDatePair', () => {
   it('displays differences of dates', () => {
-    const d1 = moment.tz(1551908483315, 'Etc/GMT').month(1).day(1).hour(18)
-    const d2 = moment.tz(d1, 'Etc/GMT').hour(21)
-    const d3 = moment.tz(d2, 'Etc/GMT').day(2)
-    const d4 = moment.tz(d3, 'Etc/GMT').month(2)
-    const d5 = moment.tz(d3, 'Etc/GMT').year(2050)
+    const d1 = DateTime.local(2019, 2, 4, 11, 41)
+    const d2 = DateTime.local(2019, 2, 4, 14, 41)
+    const d3 = DateTime.local(2019, 2, 5, 14, 41)
+    const d4 = DateTime.local(2019, 3, 5, 14, 41)
+    const d5 = DateTime.local(2050, 2, 5, 14, 41)
+    const d6 = DateTime.local(DateTime.now().year, 2, 5, 14, 41)
+    const d7 = DateTime.local(DateTime.now().year, 3, 5, 14, 41)
 
     expect(TextHelpers.formatDatePair(d1)).toMatchSnapshot()
     expect(TextHelpers.formatDatePair(d1, d2)).toMatchSnapshot()
     expect(TextHelpers.formatDatePair(d1, d3)).toMatchSnapshot()
     expect(TextHelpers.formatDatePair(d1, d4)).toMatchSnapshot()
     expect(TextHelpers.formatDatePair(d1, d5)).toMatchSnapshot()
+    expect(TextHelpers.formatDatePair(d1, d6)).toMatchSnapshot()
+    expect(TextHelpers.formatDatePair(d6, d5)).toMatchSnapshot()
+    expect(TextHelpers.formatDatePair(d6, d7)).toMatchSnapshot()
   })
 })
 
