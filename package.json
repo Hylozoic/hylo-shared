@@ -57,9 +57,6 @@
     "trunc-text": "^1.0.2",
     "validator": "^13.7.0"
   },
-  "peerDependencies": {
-    "luxon": "^3.2.1"
-  },
   "devDependencies": {
     "@babel/core": "^7.17.0",
     "@babel/eslint-parser": "^7.17.0",
