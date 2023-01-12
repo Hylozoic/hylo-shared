@@ -6,6 +6,7 @@ import { DateTime } from 'luxon'
 import prettyDate from 'pretty-date'
 import truncHTML from 'trunc-html'
 import truncText from 'trunc-text'
+import getUserLocale from 'get-user-locale'
 
 // Sanitization options
 export function insaneOptions (providedInsaneOptions) {
@@ -129,7 +130,7 @@ export function humanDate (date, short) {
   const isString = typeof date === 'string'
   const isValidDate = !isNaN(Number(date)) && Number(date) !== 0
   let ret = date && (isString || isValidDate)
-    ? prettyDate.toFormat(isString ? new Date(date) : date)
+    ? prettyDate.format(isString ? new Date(date) : date)
     : ''
 
   if (short) {
@@ -154,8 +155,15 @@ export function humanDate (date, short) {
 }
 
 export const formatDatePair = (startTime, endTime, returnAsObj) => {
-  const start = DateTime.fromISO(startTime).setZone(DateTime.local().zoneName)
-  const end = DateTime.fromISO(endTime).setZone(DateTime.local().zoneName)
+  const dateWithTime = { ...DateTime.DATE_MED_WITH_WEEKDAY, hour: 'numeric', minute: 'numeric' }
+  const dateWithTimeAndOffset = { ...DateTime.DATE_MED_WITH_WEEKDAY, hour: 'numeric', minute: 'numeric', timeZoneName: 'short' }
+  const dateNoYearWithTime = { weekday: 'short', month: 'short', day: 'numeric', hour: 'numeric', minute: 'numeric' }
+  const dateNoYearWithTimeAndOffset = { weekday: 'short', month: 'short', day: 'numeric', hour: 'numeric', minute: 'numeric', timeZoneName: 'short' }
+
+  const locale = getUserLocale()
+
+  const start = DateTime.fromISO(startTime).setLocale(locale).setZone(DateTime.local().zoneName)
+  const end = DateTime.fromISO(endTime).setLocale(locale).setZone(DateTime.local().zoneName)
 
   const now = DateTime.now()
   const isThisYear = start.year === now.year && end.year === now.year
@@ -164,20 +172,20 @@ export const formatDatePair = (startTime, endTime, returnAsObj) => {
   let from = ''
 
   if (isThisYear) {
-    from = endTime ? start.toFormat("EEE, MMM d 'at' h:mma") : start.toFormat("EEE, MMM d 'at' h:mma ZZZZ")
+    from = endTime ? start.toLocaleString(dateNoYearWithTime) : start.toLocaleString(dateNoYearWithTimeAndOffset)
   } else {
-    from = endTime ? start.toFormat("EEE, DD 'at' h:mma") : start.toFormat("EEE, DD 'at' h:mma ZZZZ")
+    from = endTime ? start.toLocaleString(dateWithTime) : start.toLocaleString(dateWithTimeAndOffset)
   }
 
   if (endTime) {
     if (end.year !== start.year && !isThisYear) {
-      to = end.toFormat("EEE, DD 'at' h:mma ZZZZ")
+      to = end.toLocaleString(dateWithTimeAndOffset)
     } else if (end.month !== start.month ||
                end.day !== start.day ||
                end <= now) {
-      to = end.toFormat("EEE, MMM d 'at' h:mma ZZZZ")
+      to = end.toLocaleString(dateNoYearWithTimeAndOffset)
     } else {
-      to = end.toFormat('h:mma ZZZZ')
+      to = end.toLocaleString(DateTime.TIME_WITH_SHORT_OFFSET)
     }
     to = returnAsObj ? to : ' - ' + to
   }
