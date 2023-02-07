@@ -2,7 +2,7 @@ import { convert as convertHtmlToText } from 'html-to-text'
 import { isURL } from 'validator'
 import { marked } from 'marked'
 import merge from 'lodash/fp/merge'
-import moment from 'moment-timezone'
+import { DateTime } from 'luxon'
 import prettyDate from 'pretty-date'
 import truncHTML from 'trunc-html'
 import truncText from 'trunc-text'
@@ -21,7 +21,7 @@ export function insaneOptions (providedInsaneOptions) {
       allowedAttributes: providedInsaneOptions?.allowedAttributes || {
         a: [
           'class', 'target', 'href',
-          'data-type', 'data-id','data-label',
+          'data-type', 'data-id', 'data-label',
           'data-user-id', 'data-entity-type', 'data-search'
         ],
         span: [
@@ -153,38 +153,40 @@ export function humanDate (date, short) {
     .replace(/ month(s?)/, ' mo$1')
 }
 
-export const formatDatePair = (startTime, endTime, returnAsObj) => {
-  const start = moment.tz(startTime, moment.tz.guess())
-  const end = moment.tz(endTime, moment.tz.guess())
+export const formatDatePair = (locale = 'en', startTime, endTime, returnAsObj) => {
+  const dateWithTime = { ...DateTime.DATE_MED_WITH_WEEKDAY, hour: 'numeric', minute: 'numeric' }
+  const dateWithTimeAndOffset = { ...DateTime.DATE_MED_WITH_WEEKDAY, hour: 'numeric', minute: 'numeric', timeZoneName: 'short' }
+  const dateNoYearWithTime = { weekday: 'short', month: 'short', day: 'numeric', hour: 'numeric', minute: 'numeric' }
+  const dateNoYearWithTimeAndOffset = { weekday: 'short', month: 'short', day: 'numeric', hour: 'numeric', minute: 'numeric', timeZoneName: 'short' }
+  const start = startTime ? DateTime.fromISO(startTime, { locale }) : null
+  const end = endTime ? DateTime.fromISO(endTime, { locale }) : null
 
-  const now = moment()
-  const isThisYear = start.year() === now.year() && end.year() === now.year()
+  const now = DateTime.local({ locale })
+  const isThisYear = start.year === now.year && end.year === now.year
 
   let to = ''
   let from = ''
 
   if (isThisYear) {
-    from = endTime ? start.format('ddd, MMM D [at] h:mmA') : start.format('ddd, MMM D [at] h:mmA z')
+    from = endTime ? start.toLocaleString(dateNoYearWithTime) : start.toLocaleString(dateNoYearWithTimeAndOffset)
   } else {
-    from = endTime ? start.format('ddd, MMM D, YYYY [at] h:mmA') : start.format('ddd, MMM D, YYYY [at] h:mmA z')
+    from = endTime ? start.toLocaleString(dateWithTime) : start.toLocaleString(dateWithTimeAndOffset)
   }
-
   if (endTime) {
-    if (end.year() !== start.year()) {
-      to = end.format('ddd, MMM D, YYYY [at] h:mmA z')
-    } else if (end.month() !== start.month() ||
-               end.day() !== start.day() ||
+    if (end.year !== start.year && !isThisYear) {
+      to = end.toLocaleString(dateWithTimeAndOffset)
+    } else if (end.month !== start.month ||
+               end.day !== start.day ||
                end <= now) {
-      to = end.format('ddd, MMM D [at] h:mmA z')
+      to = end.toLocaleString(dateNoYearWithTimeAndOffset)
     } else {
-      to = end.format('h:mmA z')
+      to = end.toLocaleString(DateTime.TIME_WITH_SHORT_OFFSET)
     }
     to = returnAsObj ? to : ' - ' + to
   }
-
   return returnAsObj ? { from, to } : from + to
 }
 
 export function isDateInTheFuture (date) {
-  return moment(date).isAfter(moment())
+  return typeof date === 'number' ? DateTime.fromMillis(date) > DateTime.now() : DateTime.fromISO(date) > DateTime.now()
 }

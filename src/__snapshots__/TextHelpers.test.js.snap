@@ -1,11 +1,17 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`formatDatePair displays differences of dates 1`] = `"Mon, Feb 4, 2019 at 11:41AM MST"`;
+exports[`formatDatePair displays differences of dates 1`] = `"Mon, Feb 4, 2019, 11:41 AM CST"`;
 
-exports[`formatDatePair displays differences of dates 2`] = `"Mon, Feb 4, 2019 at 11:41AM - Mon, Feb 4 at 2:41PM MST"`;
+exports[`formatDatePair displays differences of dates 2`] = `"Mon, Feb 4, 2019, 11:41 AM - Mon, Feb 4, 2:41 PM CST"`;
 
-exports[`formatDatePair displays differences of dates 3`] = `"Mon, Feb 4, 2019 at 11:41AM - Tue, Feb 5 at 2:41PM MST"`;
+exports[`formatDatePair displays differences of dates 3`] = `"Mon, Feb 4, 2019, 11:41 AM - Tue, Feb 5, 2:41 PM CST"`;
 
-exports[`formatDatePair displays differences of dates 4`] = `"Mon, Feb 4, 2019 at 11:41AM - Tue, Mar 5 at 2:41PM MST"`;
+exports[`formatDatePair displays differences of dates 4`] = `"Mon, Feb 4, 2019, 11:41 AM - Tue, Mar 5, 2:41 PM CST"`;
 
-exports[`formatDatePair displays differences of dates 5`] = `"Mon, Feb 4, 2019 at 11:41AM - Sat, Feb 5, 2050 at 2:41PM MST"`;
+exports[`formatDatePair displays differences of dates 5`] = `"Mon, Feb 4, 2019, 11:41 AM - Sat, Feb 5, 2050, 2:41 PM CST"`;
+
+exports[`formatDatePair displays differences of dates 6`] = `"Mon, Feb 4, 2019, 11:41 AM - Sat, Feb 5, 2022, 2:41 PM CST"`;
+
+exports[`formatDatePair displays differences of dates 7`] = `"Sat, Feb 5, 2022, 2:41 PM - Sat, Feb 5, 2050, 2:41 PM CST"`;
+
+exports[`formatDatePair displays differences of dates 8`] = `"Sat, Feb 5, 2:41 PM - Sat, Mar 5, 2:41 PM CST"`;
