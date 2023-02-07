@@ -10,8 +10,8 @@ exports[`formatDatePair displays differences of dates 4`] = `"Mon, Feb 4, 2019, 
 
 exports[`formatDatePair displays differences of dates 5`] = `"Mon, Feb 4, 2019, 11:41 AM - Sat, Feb 5, 2050, 2:41 PM CST"`;
 
-exports[`formatDatePair displays differences of dates 6`] = `"Mon, Feb 4, 2019, 11:41 AM - Sun, Feb 5, 2023, 2:41 PM CST"`;
+exports[`formatDatePair displays differences of dates 6`] = `"Mon, Feb 4, 2019, 11:41 AM - Sat, Feb 5, 2022, 2:41 PM CST"`;
 
-exports[`formatDatePair displays differences of dates 7`] = `"Sun, Feb 5, 2023, 2:41 PM - Sat, Feb 5, 2050, 2:41 PM CST"`;
+exports[`formatDatePair displays differences of dates 7`] = `"Sat, Feb 5, 2022, 2:41 PM - Sat, Feb 5, 2050, 2:41 PM CST"`;
 
-exports[`formatDatePair displays differences of dates 8`] = `"Sun, Feb 5, 2:41 PM - Sun, Mar 5, 2:41 PM CST"`;
+exports[`formatDatePair displays differences of dates 8`] = `"Sat, Feb 5, 2:41 PM - Sat, Mar 5, 2:41 PM CST"`;

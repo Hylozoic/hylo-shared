@@ -6,7 +6,6 @@ import { DateTime } from 'luxon'
 import prettyDate from 'pretty-date'
 import truncHTML from 'trunc-html'
 import truncText from 'trunc-text'
-import getUserLocale from 'get-user-locale'
 
 // Sanitization options
 export function insaneOptions (providedInsaneOptions) {
@@ -154,18 +153,15 @@ export function humanDate (date, short) {
     .replace(/ month(s?)/, ' mo$1')
 }
 
-export const formatDatePair = (startTime, endTime, returnAsObj) => {
+export const formatDatePair = (locale = 'en', startTime, endTime, returnAsObj) => {
   const dateWithTime = { ...DateTime.DATE_MED_WITH_WEEKDAY, hour: 'numeric', minute: 'numeric' }
   const dateWithTimeAndOffset = { ...DateTime.DATE_MED_WITH_WEEKDAY, hour: 'numeric', minute: 'numeric', timeZoneName: 'short' }
   const dateNoYearWithTime = { weekday: 'short', month: 'short', day: 'numeric', hour: 'numeric', minute: 'numeric' }
   const dateNoYearWithTimeAndOffset = { weekday: 'short', month: 'short', day: 'numeric', hour: 'numeric', minute: 'numeric', timeZoneName: 'short' }
+  const start = startTime ? DateTime.fromISO(startTime, { locale }) : null
+  const end = endTime ? DateTime.fromISO(endTime, { locale }) : null
 
-  const locale = getUserLocale()
-
-  const start = DateTime.fromISO(startTime).setLocale(locale).setZone(DateTime.local().zoneName)
-  const end = DateTime.fromISO(endTime).setLocale(locale).setZone(DateTime.local().zoneName)
-
-  const now = DateTime.now()
+  const now = DateTime.local({ locale })
   const isThisYear = start.year === now.year && end.year === now.year
 
   let to = ''
@@ -176,7 +172,6 @@ export const formatDatePair = (startTime, endTime, returnAsObj) => {
   } else {
     from = endTime ? start.toLocaleString(dateWithTime) : start.toLocaleString(dateWithTimeAndOffset)
   }
-
   if (endTime) {
     if (end.year !== start.year && !isThisYear) {
       to = end.toLocaleString(dateWithTimeAndOffset)
@@ -189,10 +184,9 @@ export const formatDatePair = (startTime, endTime, returnAsObj) => {
     }
     to = returnAsObj ? to : ' - ' + to
   }
-
   return returnAsObj ? { from, to } : from + to
 }
 
 export function isDateInTheFuture (date) {
-  return DateTime.fromMillis(date).isAfter(DateTime.now())
+  return typeof date === 'number' ? DateTime.fromMillis(date) > DateTime.now() : DateTime.fromISO(date) > DateTime.now()
 }

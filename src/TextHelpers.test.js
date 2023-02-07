@@ -1,5 +1,9 @@
 import * as TextHelpers from '../src/TextHelpers'
-import { DateTime } from 'luxon'
+import { DateTime, Settings } from 'luxon'
+
+beforeEach(() => {
+  Settings.now = () => new Date(2022, 6, 1).valueOf()
+})
 
 describe('presentHTMLToText', () => {
   it("shouldn't include text of href on links", () => {
@@ -40,6 +44,7 @@ describe('markdown', () => {
 
 describe('formatDatePair', () => {
   it('displays differences of dates', () => {
+    const locale = 'en'
     const d1 = DateTime.local(2019, 2, 4, 11, 41)
     const d2 = DateTime.local(2019, 2, 4, 14, 41)
     const d3 = DateTime.local(2019, 2, 5, 14, 41)
@@ -48,14 +53,14 @@ describe('formatDatePair', () => {
     const d6 = DateTime.local(DateTime.now().year, 2, 5, 14, 41)
     const d7 = DateTime.local(DateTime.now().year, 3, 5, 14, 41)
 
-    expect(TextHelpers.formatDatePair(d1)).toMatchSnapshot()
-    expect(TextHelpers.formatDatePair(d1, d2)).toMatchSnapshot()
-    expect(TextHelpers.formatDatePair(d1, d3)).toMatchSnapshot()
-    expect(TextHelpers.formatDatePair(d1, d4)).toMatchSnapshot()
-    expect(TextHelpers.formatDatePair(d1, d5)).toMatchSnapshot()
-    expect(TextHelpers.formatDatePair(d1, d6)).toMatchSnapshot()
-    expect(TextHelpers.formatDatePair(d6, d5)).toMatchSnapshot()
-    expect(TextHelpers.formatDatePair(d6, d7)).toMatchSnapshot()
+    expect(TextHelpers.formatDatePair(locale, d1)).toMatchSnapshot()
+    expect(TextHelpers.formatDatePair(locale, d1, d2)).toMatchSnapshot()
+    expect(TextHelpers.formatDatePair(locale, d1, d3)).toMatchSnapshot()
+    expect(TextHelpers.formatDatePair(locale, d1, d4)).toMatchSnapshot()
+    expect(TextHelpers.formatDatePair(locale, d1, d5)).toMatchSnapshot()
+    expect(TextHelpers.formatDatePair(locale, d1, d6)).toMatchSnapshot()
+    expect(TextHelpers.formatDatePair(locale, d6, d5)).toMatchSnapshot()
+    expect(TextHelpers.formatDatePair(locale, d6, d7)).toMatchSnapshot()
   })
 })
 
